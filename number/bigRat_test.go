@@ -134,3 +134,60 @@ func TestBigRat_RoundUp(t *testing.T) {
 		t.Errorf("RoundUp was incorrect. %s != %s", roundActual, roundExpected)
 	}
 }
+
+func TestBigRat_DyadicMean(t *testing.T) {
+	x := MakeBigRat("7/8")
+	y := MakeBigRat("3/4")
+	meanExpected := MakeBigRat("13/16")
+	meanActual := x.DyadicMean(y)
+	if meanActual != meanExpected {
+		t.Errorf("DyadicMean was incorrect, got %s, expected %s", meanActual, meanExpected)
+	}
+	x = MakeBigRat("1/8")
+	y = MakeBigRat("15/8")
+	meanExpected = MakeBigRat("1")
+	meanActual = x.DyadicMean(y)
+	if meanActual != meanExpected {
+		t.Errorf("DyadicMean was incorrect, got %s, expected %s", meanActual, meanExpected)
+	}
+	x = MakeBigRat("1")
+	y = MakeBigRat("2")
+	meanExpected = MakeBigRat("3/2")
+	meanActual = x.DyadicMean(y)
+	if meanActual != meanExpected {
+		t.Errorf("DyadicMean was incorrect, got %s, expected %s", meanActual, meanExpected)
+	}
+	x = MakeBigRat("1")
+	y = MakeBigRat("3")
+	meanExpected = MakeBigRat("2")
+	meanActual = x.DyadicMean(y)
+	if meanActual != meanExpected {
+		t.Errorf("DyadicMean was incorrect, got %s, expected %s", meanActual, meanExpected)
+	}
+	x = MakeBigRat("1/3")
+	y = MakeBigRat("1/3")
+	meanExpected = MakeBigRat("1/3")
+	meanActual = x.DyadicMean(y)
+	if meanActual != meanExpected {
+		t.Errorf("DyadicMean was incorrect, got %s, expected %s", meanActual, meanExpected)
+	}
+	x = MakeBigRat("1/11")
+	y = MakeBigRat("1/9")
+	meanExpected = MakeBigRat("3/32")
+	meanActual = x.DyadicMean(y)
+	if meanActual != meanExpected {
+		t.Errorf("DyadicMean was incorrect, got %s, expected %s", meanActual, meanExpected)
+	}
+}
+
+func TestBigRat_DyadicMedian_Panic(t *testing.T) {
+	defer func() {
+		if r := recover(); r == nil {
+			t.Errorf("DyadicMean did not panic for two values with two integers in between")
+		}
+	}()
+
+	x := MakeBigRat("1/8")
+	y := MakeBigRat("17/8")
+	x.DyadicMean(y)
+}

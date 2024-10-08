@@ -102,3 +102,32 @@ func (x BigRat) RoundUp() BigRat {
 	one := MakeBigRat("1")
 	return one.Add(x.RoundDown())
 }
+
+// DyadicMean returns the most simple dyadic number between two BigRats
+// DyadicMean is only well-defined if there is at most one integer between x and y
+func (x BigRat) DyadicMean(y BigRat) BigRat {
+	if x == y {
+		return x
+	}
+	if x.Greater(y) {
+		return y.DyadicMean(x)
+	}
+	if (x.RoundDown().Add(MakeBigRat("2"))).Less(y.RoundUp()) {
+		errorString := fmt.Sprintf("DyadicMean is not well-defined since is at more than one integer between %s and %s", x, y)
+		panic(errorString)
+	}
+	if x.RoundUp() == y.RoundDown() {
+		return x.RoundUp()
+	}
+	current := x.RoundDown()
+	offset := MakeBigRat("2")
+	half := MakeBigRat("1/2")
+	for !current.Greater(x) {
+		offset = offset.Mul(half)
+		temp := current.Add(offset)
+		if temp.Less(y) {
+			current = temp
+		}
+	}
+	return current
+}
