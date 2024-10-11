@@ -1,6 +1,9 @@
 package game
 
-import "testing"
+import (
+	"gametheorist/collection"
+	"testing"
+)
 
 func TestRat(t *testing.T) {
 	x := MakeGameRat("7/3")
@@ -114,4 +117,206 @@ func TestRat_RoundUp(t *testing.T) {
 	if roundActual != roundExpected {
 		t.Errorf("RoundUp was incorrect. %s != %s", roundActual, roundExpected)
 	}
+}
+
+func TestRat_SimplifyGameRatOptions(t *testing.T) {
+	children := collection.MakeSet[Rat]()
+	actualSet := SimplifyGameRatOptions(children, true)
+	if !actualSet.IsEmpty() {
+		t.Errorf("SimplifyGameRatOptions was incorrect, got non-empty set from empty set")
+	}
+
+	children.Add(MakeGameRat("0"))
+	children.Add(MakeGameRat("-2"))
+	children.Add(MakeGameRat("2"))
+	children.Add(MakeGameRat("5/2"))
+	children.Add(MakeGameRat("9/4"))
+	actualSet = SimplifyGameRatOptions(children, true)
+	actualGame := actualSet.GetOnlyElement()
+	expectedGame := MakeGameRat("5/2")
+	if actualGame != expectedGame {
+		t.Errorf("SimplifyGameRatOptions was incorrect, got: %v, want: %v.", actualGame, expectedGame)
+	}
+	actualSet = SimplifyGameRatOptions(children, false)
+	actualGame = actualSet.GetOnlyElement()
+	expectedGame = MakeGameRat("-2")
+	if actualGame != expectedGame {
+		t.Errorf("SimplifyGameRatOptions was incorrect, got: %v, want: %v.", actualGame, expectedGame)
+	}
+}
+
+func TestRat_DeduceGameRat_Empty(t *testing.T) {
+	leftChildren := collection.MakeSet[Rat]()
+	rightChildren := collection.MakeSet[Rat]()
+	GameActual := DeduceGameRat(leftChildren, rightChildren)
+	GameExpected := MakeGameRat("0")
+	if GameActual != GameExpected {
+		t.Errorf("DeduceGameRat was incorrect for empty game, got: %v, want: %v.", GameActual, GameExpected)
+	}
+}
+
+func TestRat_DeduceGameRat_RightOptional(t *testing.T) {
+	leftChildren := collection.MakeSet[Rat]()
+	rightChildren := collection.MakeSet[Rat]()
+	rightChildren.Add(MakeGameRat("5/4"))
+	GameActual := DeduceGameRat(leftChildren, rightChildren)
+	GameExpected := MakeGameRat("0")
+	if GameActual != GameExpected {
+		t.Errorf("DeduceGameRat was incorrect for optional right move, got: %v, want: %v.", GameActual, GameExpected)
+	}
+
+	leftChildren = collection.MakeSet[Rat]()
+	rightChildren = collection.MakeSet[Rat]()
+	rightChildren.Add(MakeGameRat("1/4"))
+	GameActual = DeduceGameRat(leftChildren, rightChildren)
+	GameExpected = MakeGameRat("0")
+	if GameActual != GameExpected {
+		t.Errorf("DeduceGameRat was incorrect for optional right move, got: %v, want: %v.", GameActual, GameExpected)
+	}
+
+	leftChildren = collection.MakeSet[Rat]()
+	rightChildren = collection.MakeSet[Rat]()
+	rightChildren.Add(MakeGameRat("-1"))
+	GameActual = DeduceGameRat(leftChildren, rightChildren)
+	GameExpected = MakeGameRat("-2")
+	if GameActual != GameExpected {
+		t.Errorf("DeduceGameRat was incorrect for optional right move, got: %v, want: %v.", GameActual, GameExpected)
+	}
+
+	leftChildren = collection.MakeSet[Rat]()
+	rightChildren = collection.MakeSet[Rat]()
+	rightChildren.Add(MakeGameRat("-5/4"))
+	GameActual = DeduceGameRat(leftChildren, rightChildren)
+	GameExpected = MakeGameRat("-2")
+	if GameActual != GameExpected {
+		t.Errorf("DeduceGameRat was incorrect for optional right move, got: %v, want: %v.", GameActual, GameExpected)
+	}
+}
+
+func TestRat_DeduceGameRat_LeftOptional(t *testing.T) {
+	leftChildren := collection.MakeSet[Rat]()
+	rightChildren := collection.MakeSet[Rat]()
+	leftChildren.Add(MakeGameRat("-5/4"))
+	GameActual := DeduceGameRat(leftChildren, rightChildren)
+	GameExpected := MakeGameRat("0")
+	if GameActual != GameExpected {
+		t.Errorf("DeduceGameRat was incorrect for optional left move, got: %v, want: %v.", GameActual, GameExpected)
+	}
+
+	leftChildren = collection.MakeSet[Rat]()
+	rightChildren = collection.MakeSet[Rat]()
+	leftChildren.Add(MakeGameRat("-1/4"))
+	GameActual = DeduceGameRat(leftChildren, rightChildren)
+	GameExpected = MakeGameRat("0")
+	if GameActual != GameExpected {
+		t.Errorf("DeduceGameRat was incorrect for optional left move, got: %v, want: %v.", GameActual, GameExpected)
+	}
+
+	leftChildren = collection.MakeSet[Rat]()
+	rightChildren = collection.MakeSet[Rat]()
+	leftChildren.Add(MakeGameRat("1"))
+	GameActual = DeduceGameRat(leftChildren, rightChildren)
+	GameExpected = MakeGameRat("2")
+	if GameActual != GameExpected {
+		t.Errorf("DeduceGameRat was incorrect for optional left move, got: %v, want: %v.", GameActual, GameExpected)
+	}
+
+	leftChildren = collection.MakeSet[Rat]()
+	rightChildren = collection.MakeSet[Rat]()
+	leftChildren.Add(MakeGameRat("5/4"))
+	GameActual = DeduceGameRat(leftChildren, rightChildren)
+	GameExpected = MakeGameRat("2")
+	if GameActual != GameExpected {
+		t.Errorf("DeduceGameRat was incorrect for optional left move, got: %v, want: %v.", GameActual, GameExpected)
+	}
+}
+
+func TestRat_DeduceGameRat_TwoSidedDisadvantage(t *testing.T) {
+	leftChildren := collection.MakeSet[Rat]()
+	rightChildren := collection.MakeSet[Rat]()
+	leftChildren.Add(MakeGameRat("-1/4"))
+	rightChildren.Add(MakeGameRat("1/8"))
+	GameActual := DeduceGameRat(leftChildren, rightChildren)
+	GameExpected := MakeGameRat("0")
+	if GameActual != GameExpected {
+		t.Errorf("DeduceGameRat was incorrect for two-sided disadvantage, got: %v, want: %v.", GameActual, GameExpected)
+	}
+}
+
+func TestRat_DeduceGameRat_RightDisadvantage(t *testing.T) {
+	leftChildren := collection.MakeSet[Rat]()
+	rightChildren := collection.MakeSet[Rat]()
+	leftChildren.Add(MakeGameRat("1/4"))
+	rightChildren.Add(MakeGameRat("6"))
+	GameActual := DeduceGameRat(leftChildren, rightChildren)
+	GameExpected := MakeGameRat("1")
+	if GameActual != GameExpected {
+		t.Errorf("DeduceGameRat was incorrect for right disadvantage, got: %v, want: %v.", GameActual, GameExpected)
+	}
+
+	leftChildren = collection.MakeSet[Rat]()
+	rightChildren = collection.MakeSet[Rat]()
+	leftChildren.Add(MakeGameRat("2"))
+	rightChildren.Add(MakeGameRat("6"))
+	GameActual = DeduceGameRat(leftChildren, rightChildren)
+	GameExpected = MakeGameRat("3")
+	if GameActual != GameExpected {
+		t.Errorf("DeduceGameRat was incorrect for right disadvantage, got: %v, want: %v.", GameActual, GameExpected)
+	}
+
+	leftChildren = collection.MakeSet[Rat]()
+	rightChildren = collection.MakeSet[Rat]()
+	leftChildren.Add(MakeGameRat("5/4"))
+	rightChildren.Add(MakeGameRat("3/2"))
+	GameActual = DeduceGameRat(leftChildren, rightChildren)
+	GameExpected = MakeGameRat("11/8")
+	if GameActual != GameExpected {
+		t.Errorf("DeduceGameRat was incorrect for right disadvantage, got: %v, want: %v.", GameActual, GameExpected)
+	}
+}
+
+func TestRat_DeduceGameRat_LeftDisadvantage(t *testing.T) {
+	leftChildren := collection.MakeSet[Rat]()
+	rightChildren := collection.MakeSet[Rat]()
+	rightChildren.Add(MakeGameRat("-1/4"))
+	leftChildren.Add(MakeGameRat("-6"))
+	GameActual := DeduceGameRat(leftChildren, rightChildren)
+	GameExpected := MakeGameRat("-1")
+	if GameActual != GameExpected {
+		t.Errorf("DeduceGameRat was incorrect for left disadvantage, got: %v, want: %v.", GameActual, GameExpected)
+	}
+
+	leftChildren = collection.MakeSet[Rat]()
+	rightChildren = collection.MakeSet[Rat]()
+	rightChildren.Add(MakeGameRat("-2"))
+	leftChildren.Add(MakeGameRat("-6"))
+	GameActual = DeduceGameRat(leftChildren, rightChildren)
+	GameExpected = MakeGameRat("-3")
+	if GameActual != GameExpected {
+		t.Errorf("DeduceGameRat was incorrect for left disadvantage, got: %v, want: %v.", GameActual, GameExpected)
+	}
+
+	leftChildren = collection.MakeSet[Rat]()
+	rightChildren = collection.MakeSet[Rat]()
+	rightChildren.Add(MakeGameRat("-5/4"))
+	leftChildren.Add(MakeGameRat("-3/2"))
+	GameActual = DeduceGameRat(leftChildren, rightChildren)
+	GameExpected = MakeGameRat("-11/8")
+	if GameActual != GameExpected {
+		t.Errorf("DeduceGameRat was incorrect for left disadvantage, got: %v, want: %v.", GameActual, GameExpected)
+	}
+}
+
+func TestRat_DeduceGameRat_Panic_TwoSidedAdvantage(t *testing.T) {
+	defer func() {
+		if r := recover(); r == nil {
+			t.Errorf("GetOnlyElement did not panic on List with more than one element")
+		}
+	}()
+
+	leftChildren := collection.MakeSet[Rat]()
+	rightChildren := collection.MakeSet[Rat]()
+	leftChildren.Add(MakeGameRat("1/4"))
+	rightChildren.Add(MakeGameRat("1/4"))
+	DeduceGameRat(leftChildren, rightChildren)
 }
