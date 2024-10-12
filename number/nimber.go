@@ -35,3 +35,11 @@ func (x Nimber) Add(y Nimber) Nimber {
 	zRaw.Xor(xRaw, yRaw)
 	return Nimber{zRaw.String()}
 }
+
+func (x Nimber) Increment() Nimber {
+	xRaw := makeBigIntNative(x.value)
+	yRaw := makeBigIntNative("1")
+	zRaw := &big.Int{}
+	zRaw.Add(xRaw, yRaw)
+	return Nimber{zRaw.String()}
+}
