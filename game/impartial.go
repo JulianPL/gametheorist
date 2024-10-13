@@ -19,6 +19,10 @@ func (x Impartial) String() string {
 	return fmt.Sprintf(x.value.String())
 }
 
+func (x Impartial) Add(y Impartial) Impartial {
+	return Impartial{x.value.Add(y.value)}
+}
+
 func (x Impartial) Increment() Impartial {
 	value := x.value.Increment()
 	return Impartial{value}
