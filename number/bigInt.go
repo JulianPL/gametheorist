@@ -72,7 +72,7 @@ func (x BigInt) Greater(y BigInt) bool {
 	return xRaw.Cmp(yRaw) == 1
 }
 
-func (x BigInt) isOdd() bool {
+func (x BigInt) IsOdd() bool {
 	xRaw := makeBigIntNative(x.value)
 	return xRaw.Bit(0) == 1
 }

@@ -85,11 +85,11 @@ func TestBigInt_IsOdd(t *testing.T) {
 	even := MakeBigInt("10")
 	odd := MakeBigInt("9")
 
-	if even.isOdd() {
+	if even.IsOdd() {
 		t.Errorf("isOdd was incorrect. %s should not be odd.", even)
 	}
 
-	if !odd.isOdd() {
+	if !odd.IsOdd() {
 		t.Errorf("isOdd was incorrect. %s should be odd.", odd)
 	}
 }
