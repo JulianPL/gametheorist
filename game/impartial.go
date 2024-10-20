@@ -54,3 +54,34 @@ func NimSequenceFromSubtractionSet(subtractionSet collection.Set[int], length in
 	}
 	return games
 }
+
+// NimSequenceFromTakeAndBreakCode calculates the first length nim-values for a nim-style game,
+// in which the number of taken elements and the possible counts of subheaps is given by the takeAndBreakCode.
+// It uses the minimal excluded property on all suitable subpartitions.
+// Todo Implement improvements after p.91 of winning ways (if applicable) or at least refactor
+func NimSequenceFromTakeAndBreakCode(takeAndBreakCode []number.BigInt, length int) []Impartial {
+	games := make([]Impartial, length)
+	for elementCount := 0; elementCount < length; elementCount++ {
+		children := collection.MakeSet[Impartial]()
+		for index, takeAndBreakValue := range takeAndBreakCode {
+			removed := index + 1
+			heapCount := 0
+			for takeAndBreakValue.Greater(number.MakeBigInt("0")) {
+				if takeAndBreakValue.IsOdd() {
+					partitions := collection.MakeOrderedPartitions(elementCount-removed, heapCount)
+					for _, partition := range partitions {
+						nimber := MakeGameImpartial("0")
+						for _, heap := range partition {
+							nimber = nimber.Add(games[heap])
+						}
+						children.Add(nimber)
+					}
+				}
+				heapCount++
+				takeAndBreakValue = takeAndBreakValue.Div(number.MakeBigInt("2"))
+			}
+		}
+		games[elementCount] = MinimalExcluded(children)
+	}
+	return games
+}

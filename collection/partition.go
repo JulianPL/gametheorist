@@ -8,11 +8,11 @@ func MakeOrderedPartitions(sum, length int) [][]int {
 			return [][]int{}
 		}
 	}
-	if length == 1 {
-		return [][]int{{sum}}
-	}
 	if sum < length {
 		return [][]int{}
+	}
+	if length == 1 {
+		return [][]int{{sum}}
 	}
 	var partitions [][]int
 	for first := 1; first <= sum-(length-1); first++ {

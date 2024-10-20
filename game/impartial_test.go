@@ -2,6 +2,7 @@ package game
 
 import (
 	"gametheorist/collection"
+	"gametheorist/number"
 	"reflect"
 	"testing"
 )
@@ -58,5 +59,27 @@ func TestImpartial_NimSequenceFromSubtractionSet(t *testing.T) {
 		MakeGameImpartial("1"), MakeGameImpartial("0"), MakeGameImpartial("2")}
 	if !reflect.DeepEqual(actual, expected) {
 		t.Errorf("NimSequenceFromSubtractionSet was incorrect, got = %s; want %s", actual, expected)
+	}
+}
+
+func TestImpartial_NimSequenceFromTakeAndBreakCode(t *testing.T) {
+	takeAndBreakCode := []number.BigInt{number.MakeBigInt("1"), number.MakeBigInt("2"), number.MakeBigInt("3")}
+	actual := NimSequenceFromTakeAndBreakCode(takeAndBreakCode, 12)
+	expected := []Impartial{MakeGameImpartial("0"), MakeGameImpartial("1"), MakeGameImpartial("0"),
+		MakeGameImpartial("2"), MakeGameImpartial("2"), MakeGameImpartial("1"),
+		MakeGameImpartial("0"), MakeGameImpartial("0"), MakeGameImpartial("2"),
+		MakeGameImpartial("1"), MakeGameImpartial("1"), MakeGameImpartial("0")}
+	if !reflect.DeepEqual(actual, expected) {
+		t.Errorf("NimSequenceFromTakeAndBreakCode was incorrect, got = %s; want %s", actual, expected)
+	}
+
+	takeAndBreakCode = []number.BigInt{number.MakeBigInt("7"), number.MakeBigInt("7"), number.MakeBigInt("0")}
+	actual = NimSequenceFromTakeAndBreakCode(takeAndBreakCode, 12)
+	expected = []Impartial{MakeGameImpartial("0"), MakeGameImpartial("1"), MakeGameImpartial("2"),
+		MakeGameImpartial("3"), MakeGameImpartial("1"), MakeGameImpartial("4"),
+		MakeGameImpartial("3"), MakeGameImpartial("2"), MakeGameImpartial("1"),
+		MakeGameImpartial("4"), MakeGameImpartial("2"), MakeGameImpartial("6")}
+	if !reflect.DeepEqual(actual, expected) {
+		t.Errorf("NimSequenceFromTakeAndBreakCode was incorrect, got = %s; want %s", actual, expected)
 	}
 }
