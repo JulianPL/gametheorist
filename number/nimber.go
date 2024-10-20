@@ -5,13 +5,6 @@ import (
 	"math/big"
 )
 
-// makeBigIntNative returns a pointer to a big.Int with a value given by a string.
-func makeBigIntNative(s string) *big.Int {
-	res := &big.Int{}
-	res.SetString(s, 10)
-	return res
-}
-
 // Nimber is a constant and comparable data structure representing arbitrary nimbers.
 type Nimber struct {
 	value string
