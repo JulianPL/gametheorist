@@ -27,7 +27,27 @@ func TestBigInt_Sub(t *testing.T) {
 	sumActual := x.Sub(y)
 	sumExpected := MakeBigInt("-1")
 	if sumActual != sumExpected {
-		t.Errorf("Sum was incorrect, got: %s, want: %s.", sumActual, sumExpected)
+		t.Errorf("Difference was incorrect, got: %s, want: %s.", sumActual, sumExpected)
+	}
+}
+
+func TestBigInt_Mul(t *testing.T) {
+	x := MakeBigInt("8")
+	y := MakeBigInt("9")
+	sumActual := x.Mul(y)
+	sumExpected := MakeBigInt("72")
+	if sumActual != sumExpected {
+		t.Errorf("Product was incorrect, got: %s, want: %s.", sumActual, sumExpected)
+	}
+}
+
+func TestBigInt_Div(t *testing.T) {
+	x := MakeBigInt("15")
+	y := MakeBigInt("4")
+	sumActual := x.Div(y)
+	sumExpected := MakeBigInt("3")
+	if sumActual != sumExpected {
+		t.Errorf("Quotient was incorrect, got: %s, want: %s.", sumActual, sumExpected)
 	}
 }
 
@@ -58,5 +78,18 @@ func TestBigInt_Greatest(t *testing.T) {
 	}
 	if !large.Greater(small) {
 		t.Errorf("Greater was incorrect. %s should be greater than %s", large, small)
+	}
+}
+
+func TestBigInt_IsOdd(t *testing.T) {
+	even := MakeBigInt("10")
+	odd := MakeBigInt("9")
+
+	if even.isOdd() {
+		t.Errorf("isOdd was incorrect. %s should not be odd.", even)
+	}
+
+	if !odd.isOdd() {
+		t.Errorf("isOdd was incorrect. %s should be odd.", odd)
 	}
 }

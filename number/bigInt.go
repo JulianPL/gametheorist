@@ -44,6 +44,22 @@ func (x BigInt) Sub(y BigInt) BigInt {
 	return BigInt{zRaw.String()}
 }
 
+func (x BigInt) Mul(y BigInt) BigInt {
+	xRaw := makeBigIntNative(x.value)
+	yRaw := makeBigIntNative(y.value)
+	zRaw := &big.Int{}
+	zRaw.Mul(xRaw, yRaw)
+	return BigInt{zRaw.String()}
+}
+
+func (x BigInt) Div(y BigInt) BigInt {
+	xRaw := makeBigIntNative(x.value)
+	yRaw := makeBigIntNative(y.value)
+	zRaw := &big.Int{}
+	zRaw.Div(xRaw, yRaw)
+	return BigInt{zRaw.String()}
+}
+
 func (x BigInt) Less(y BigInt) bool {
 	xRaw := makeBigIntNative(x.value)
 	yRaw := makeBigIntNative(y.value)
@@ -54,4 +70,9 @@ func (x BigInt) Greater(y BigInt) bool {
 	xRaw := makeBigIntNative(x.value)
 	yRaw := makeBigIntNative(y.value)
 	return xRaw.Cmp(yRaw) == 1
+}
+
+func (x BigInt) isOdd() bool {
+	xRaw := makeBigIntNative(x.value)
+	return xRaw.Bit(0) == 1
 }
