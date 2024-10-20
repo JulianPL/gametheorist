@@ -2,6 +2,7 @@ package game
 
 import (
 	"gametheorist/collection"
+	"reflect"
 	"testing"
 )
 
@@ -41,5 +42,21 @@ func TestImpartial_MinimalExcluded(t *testing.T) {
 	mexExpected = MakeGameImpartial("4")
 	if mexActual != mexExpected {
 		t.Errorf("MinimalExcluded was incorrect, got = %s; want %s", mexActual, mexExpected)
+	}
+}
+
+func TestImpartial_NimSequenceFromSubtractionSet(t *testing.T) {
+	subtractionSet := collection.MakeSet[int]()
+	subtractionSet.Add(2)
+	subtractionSet.Add(4)
+	subtractionSet.Add(7)
+	actual := NimSequenceFromSubtractionSet(subtractionSet, 14)
+	expected := []Impartial{MakeGameImpartial("0"), MakeGameImpartial("0"),
+		MakeGameImpartial("1"), MakeGameImpartial("1"), MakeGameImpartial("2"),
+		MakeGameImpartial("2"), MakeGameImpartial("0"), MakeGameImpartial("3"),
+		MakeGameImpartial("1"), MakeGameImpartial("0"), MakeGameImpartial("2"),
+		MakeGameImpartial("1"), MakeGameImpartial("0"), MakeGameImpartial("2")}
+	if !reflect.DeepEqual(actual, expected) {
+		t.Errorf("NimSequenceFromSubtractionSet was incorrect, got = %s; want %s", actual, expected)
 	}
 }
